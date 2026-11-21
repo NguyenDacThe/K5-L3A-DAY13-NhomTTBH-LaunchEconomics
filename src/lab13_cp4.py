@@ -1,11 +1,11 @@
-"""Tính cỡ mẫu CP4. Chạy `python lab13_cp4.py` trong src/ trước khi ghép vào lab13.py."""
+"""Tính cỡ mẫu và đối chiếu tỉ lệ mở lại của CP4."""
 
+import csv
 import math
+from pathlib import Path
 from statistics import NormalDist
 
-import pandas as pd
-from statsmodels.stats.power import NormalIndPower
-from statsmodels.stats.proportion import proportion_effectsize
+PHAM_VI_PILOT = {'noi_dia', 'hang_nang'}
 
 
 def co_mau_moi_nhom(baseline, target, alpha, power):
@@ -24,6 +24,22 @@ def he_so_thiet_ke(m, icc):
     return 1 + (m - 1) * icc
 
 
+def power_hai_phia(p1, p2, n_moi_nhom, alpha):
+    """Xấp xỉ chuẩn hai phía với cỡ hiệu ứng Cohen h và hai nhóm bằng nhau."""
+    normal = NormalDist()
+    h = 2 * (math.asin(math.sqrt(p2)) - math.asin(math.sqrt(p1)))
+    trung_binh = abs(h) * math.sqrt(n_moi_nhom / 2)
+    nguong = normal.inv_cdf(1 - alpha / 2)
+    return normal.cdf(trung_binh - nguong) + normal.cdf(-trung_binh - nguong)
+
+
+def doc_yeu_cau():
+    """Đọc cùng CSV với lệnh chính, không cần pandas khi kiểm riêng CP4."""
+    duong_dan = Path(__file__).with_name('logix_requests.csv')
+    with duong_dan.open(encoding='utf-8', newline='') as f:
+        return list(csv.DictReader(f))
+
+
 def in_ket_qua_cp4(reqs):
     baseline, alpha, power, icc = 0.70, 0.05, 0.80, 0.02
     nhan_vien, depot = 20, 6  # số cụm mỗi nhóm khi chia đôi
@@ -37,9 +53,7 @@ def in_ket_qua_cp4(reqs):
     m_toi_thieu = math.ceil(n_6 * (1 - icc) / (nhan_vien - n_6 * icc))
     de = he_so_thiet_ke(m_toi_thieu, icc)
     n_hieu_dung = nhan_vien * m_toi_thieu / de
-    power_5 = NormalIndPower().power(
-        effect_size=proportion_effectsize(0.75, baseline), nobs1=n_6, alpha=alpha
-    )
+    power_5 = power_hai_phia(baseline, 0.75, n_6, alpha)
 
     print(f'D1a · Chia theo yêu cầu: {n_5} yêu cầu mỗi nhóm để đo +5 điểm %')
     print(f'D1b · m=75: DE={de_75:.2f}, {n_theo_nhan_vien} yêu cầu, {cum_can} người mỗi nhóm')
@@ -49,11 +63,11 @@ def in_ket_qua_cp4(reqs):
     print(f'      DE={de:.2f}, {nhan_vien * m_toi_thieu} thực tế và {n_hieu_dung:.2f} hiệu dụng mỗi nhóm')
     print(f'      Power ở +5 điểm % với {n_6} hiệu dụng mỗi nhóm: {power_5:.3f}')
 
-    pham_vi = reqs[reqs['loai'].isin(['noi_dia', 'hang_nang'])]
+    pham_vi = [row for row in reqs if row['loai'] in PHAM_VI_PILOT]
     for nhom, du_lieu in [('Toàn mẫu', reqs), ('Phạm vi pilot', pham_vi)]:
-        mo_lai = du_lieu['mo_lai_trong_7_ngay'].eq(1).sum()
+        mo_lai = sum(int(row['mo_lai_trong_7_ngay']) == 1 for row in du_lieu)
         print(f'{nhom} · Mở lại 7 ngày: {mo_lai}/{len(du_lieu)} ({mo_lai / len(du_lieu):.2%})')
 
 
 if __name__ == '__main__':
-    in_ket_qua_cp4(pd.read_csv('logix_requests.csv', keep_default_na=False))
+    in_ket_qua_cp4(doc_yeu_cau())
