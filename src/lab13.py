@@ -12,24 +12,29 @@ GIA_RA = 130        # đồng cho 1.000 token đầu ra
 GIA_TOOL = 15       # đồng cho 1 lần gọi tool
 LUONG_PHUT = 2000   # đồng cho 1 phút của nhân viên (đã gồm bảo hiểm, văn phòng)
 BASELINE = 12000    # đồng cho 1 yêu cầu khi nhân viên tự làm (6 phút)
+CHI_PHI_CO_DINH_THANG = 40_000_000
 
 
 # ---------- Nhiệm vụ A1 · Kinh tế của việc chạy lại ----------
-# TODO CP1: viết ba hàm dưới đây cho tới khi kiem_tra_dap_an_biet_truoc() in ĐẠT.
 def so_lan_chay_ky_vong(p, k=None):
     """Số lần chạy trung bình cho 1 yêu cầu khi mỗi lần đúng với xác suất p.
     k = số lần chạy tối đa; k=None nghĩa là chạy lại đến khi đúng."""
-    raise NotImplementedError('VIẾT Ở ĐÂY')
+    if p == 0:
+        return math.inf if k is None else k
+    return 1 / p if k is None else ti_le_thanh_cong(p, k) / p
 
 
 def ti_le_thanh_cong(p, k=None):
     """Xác suất yêu cầu thành công sau tối đa k lần chạy."""
-    raise NotImplementedError('VIẾT Ở ĐÂY')
+    if k is None:
+        return float(p > 0)
+    return 1 - (1 - p) ** k
 
 
 def he_so_chi_phi_moi_viec_thanh_cong(p, k=None):
     """Chi phí mỗi việc thành công, tính bằng bội số của giá một lần chạy."""
-    raise NotImplementedError('VIẾT Ở ĐÂY')
+    thanh_cong = ti_le_thanh_cong(p, k)
+    return so_lan_chay_ky_vong(p, k) / thanh_cong if thanh_cong else math.inf
 
 
 def kiem_tra_dap_an_biet_truoc():
@@ -41,26 +46,87 @@ def kiem_tra_dap_an_biet_truoc():
 
 
 # ---------- Nhiệm vụ A2 · Mô hình chi phí từ trace ----------
-# TODO CP1: viết mo_hinh; CP2 gọi lại hàm này với tham số giá và hệ số đã đổi.
-def mo_hinh(runs, reqs, gia_vao=26, gia_ra=130, gia_tool=15, luong_phut=2000,
+def mo_hinh(runs, reqs, gia_vao=GIA_VAO, gia_ra=GIA_RA, gia_tool=GIA_TOOL, luong_phut=LUONG_PHUT,
             he_so_xem_lai=1.0, he_so_lam_lai=1.0, max_lan_chay=None):
-    """Trả về dict gồm: token, tool, xem_lai, lam_lai, tong, thanh_cong, cps (chi phí mỗi việc thành công).
+    """Tính chi phí theo tập yêu cầu, gồm chi phí chạy lại và hóa đơn mỗi yêu cầu.
     - token, tool: cộng trên MỌI lần chạy trong runs, kể cả lần lỗi.
     - xem_lai, lam_lai: số phút (cột *_simulated) × LUONG_PHUT. Đây là số GIẢ LẬP, phải ghi nhãn simulated khi báo cáo.
     - thanh_cong: số yêu cầu có ket_qua == 'thanh_cong'.
     - Các tham số giá/hệ số/max_lan_chay dùng cho Nhiệm vụ B (độ nhạy, giới hạn số lần chạy); giữ mặc định ở A2.
     """
-    raise NotImplementedError('VIẾT Ở ĐÂY')
+    runs = runs[runs['request_id'].isin(reqs['request_id'])]
+    cot_phut = ['phut_xem_lai_simulated', 'phut_lam_lai_simulated']
+    if max_lan_chay is not None:
+        runs = runs[runs['attempt'] <= max_lan_chay]
+        reqs = reqs.copy()
+        vuot_gioi_han = reqs['so_lan_chay'] > max_lan_chay
+        reqs.loc[vuot_gioi_han, 'ket_qua'] = 'chuyen_nhan_vien'
+        reqs.loc[vuot_gioi_han, cot_phut] = 0
+
+    tien_token = (runs['tokens_in'] * gia_vao + runs['tokens_out'] * gia_ra) / 1000
+    tien_tool = runs['tool_calls'] * gia_tool
+    token, tool = tien_token.sum(), tien_tool.sum()
+    xem_lai = reqs[cot_phut[0]].sum() * luong_phut * he_so_xem_lai
+    lam_lai = reqs[cot_phut[1]].sum() * luong_phut * he_so_lam_lai
+    tong = token + tool + xem_lai + lam_lai
+    thanh_cong = reqs['ket_qua'].eq('thanh_cong').sum()
+    return dict(
+        token=token, tool=tool,
+        chay_lai=(tien_token + tien_tool)[runs['attempt'] > 1].sum(),
+        xem_lai=xem_lai, lam_lai=lam_lai, tong=tong, thanh_cong=thanh_cong,
+        cps=tong / thanh_cong if thanh_cong else math.inf,
+        hoa_don_moi_yc=(token + tool) / len(reqs) if len(reqs) else math.nan,
+    )
 
 
 if __name__ == '__main__':
     runs = pd.read_csv('logix_runs.csv')
     reqs = pd.read_csv('logix_requests.csv', keep_default_na=False)
     kiem_tra_dap_an_biet_truoc()
+    print(f'A1: {so_lan_chay_ky_vong(0.8, 2):.2f} | {so_lan_chay_ky_vong(0.8):.2f} | '
+          f'{he_so_chi_phi_moi_viec_thanh_cong(0.8, 3):.2f}')
+
+    print('\nA2 · Chi phí từ trace')
     ket_qua = mo_hinh(runs, reqs)
     for ten, gia_tri in ket_qua.items():
-        print(f'{ten:12s} {gia_tri:>14,.0f}')
-    # TODO CP1 · Nhiệm vụ A3: tính lại theo từng giá trị của cột loai.
+        nhan = ' [simulated]' if ten in ('xem_lai', 'lam_lai', 'tong', 'cps') else ''
+        so_le = 1 if ten == 'hoa_don_moi_yc' else 0
+        print(f'{ten:17s} {gia_tri:>14,.{so_le}f}{nhan}')
+    print(f"CPS / hóa đơn mỗi yêu cầu: {ket_qua['cps'] / ket_qua['hoa_don_moi_yc']:.2f}× [simulated]")
+    print(f"Tỷ trọng làm lại: {ket_qua['lam_lai'] / ket_qua['tong']:.2%} [simulated]")
+    chua_thanh_cong = len(reqs) - ket_qua['thanh_cong']
+    chi_phi_he_thong = (ket_qua['tong'] + chua_thanh_cong * BASELINE) / len(reqs)
+    print(f'Chi phí cả hệ thống theo giả định xử lý tay {chua_thanh_cong} ca: '
+          f'{chi_phi_he_thong:,.0f} đ/yêu cầu ({chi_phi_he_thong / BASELINE:.2f}×) [simulated]')
+
+    print('\nA3 · Loại | số yêu cầu | thành công | lượt/yêu cầu | CPS và bội số [simulated]')
+    for loai, nhom in reqs.groupby('loai', sort=False):
+        theo_loai = mo_hinh(runs, nhom)
+        cps = theo_loai['cps']
+        print(f"{loai:10s} {len(nhom):4d} {theo_loai['thanh_cong'] / len(nhom):7.1%} "
+              f"{nhom['so_lan_chay'].mean():6.2f} {cps:9,.0f} đ {cps / BASELINE:.2f}×")
+
+    quoc_te = runs[runs['request_id'].isin(reqs.loc[reqs['loai'].eq('quoc_te'), 'request_id'])]
+    theo_lan = quoc_te.assign(ok=quoc_te['status'].eq('ok')).groupby('attempt')['ok']
+    print('Quốc tế, tỷ lệ lượt có status=ok theo từng lần thử:')
+    for lan, so_lieu in theo_lan.agg(['sum', 'count']).iterrows():
+        print(f"  Lần {lan}: {so_lieu['sum']}/{so_lieu['count']} ({so_lieu['sum'] / so_lieu['count']:.1%})")
+
+    print('\nA4 · Chi phí cố định của phạm vi noi_dia + hang_nang')
+    pham_vi = reqs[reqs['loai'].isin(['noi_dia', 'hang_nang'])]
+    ket_qua_pilot = mo_hinh(runs, pham_vi)
+    # Khối lượng tháng là tổng yêu cầu toàn hệ thống, gồm cả các loại ngoài pilot.
+    ti_le_thanh_cong_pilot = ket_qua_pilot['thanh_cong'] / len(reqs)
+    print(f"Tỷ lệ việc thành công trong phạm vi trên toàn mẫu: "
+          f"{ket_qua_pilot['thanh_cong']}/{len(reqs)} ({ti_le_thanh_cong_pilot:.1%})")
+    for khoi_luong in (45_000, 22_500):
+        viec_thanh_cong = khoi_luong * ti_le_thanh_cong_pilot
+        co_dinh_moi_viec = CHI_PHI_CO_DINH_THANG / viec_thanh_cong
+        cps_co_dinh = ket_qua_pilot['cps'] + co_dinh_moi_viec
+        print(f'{khoi_luong:,} yêu cầu/tháng | {viec_thanh_cong:,.0f} việc thành công | '
+              f'{co_dinh_moi_viec:,.0f} đ cố định/việc | {cps_co_dinh:,.0f} đ/việc '
+              f'({cps_co_dinh / BASELINE:.2f}×) [simulated]')
+
     # TODO CP2 · Nhiệm vụ B: đổi từng yếu tố, ghi vào bảng độ nhạy.
     # TODO CP4 · Nhiệm vụ D: cỡ mẫu.
     #   from statsmodels.stats.proportion import proportion_effectsize
