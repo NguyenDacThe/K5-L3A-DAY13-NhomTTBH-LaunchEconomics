@@ -12,7 +12,7 @@
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 |        |      |       |        |         |
-|   2 |        |      |       |        |         |
+|   2 | Nguyễn Đắc Thể | 2A202603529 | dacthebn@gmail.com | NguyenDacThe | Người 2 · Kiểm số CP1–CP2, phụ trách pilot CP4 và tiếp quản code sau bàn giao |
 |   3 |        |      |       |        |         |
 |   4 |        |      |       |        |         |
 
