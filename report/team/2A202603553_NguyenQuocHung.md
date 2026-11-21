@@ -1,4 +1,32 @@
-# CP3 · Phiếu gắn nhãn của Nguyễn Quốc Hưng (2A202603553)
+# Báo cáo cá nhân — Nguyễn Quốc Hưng
+
+## 1. Thông tin thành viên
+
+- Họ tên: Nguyễn Quốc Hưng
+- MSSV: 2A202603553
+- Vai trò: Hỗ trợ CP4 và phụ trách phiếu thứ hai của CP3.
+
+## 2. Phần việc phụ trách
+
+- Kiểm tra cỡ mẫu và điều kiện dừng của pilot. Chuẩn bị phiếu riêng cho nhiệm vụ C.
+
+## 3. Đóng góp cụ thể
+
+- Bổ sung cách chạy CP4 riêng bằng thư viện chuẩn Python và kiểm power ở mức chênh 5 điểm phần trăm. Bổ sung cách kiểm cỡ mẫu hiệu dụng khi số yêu cầu theo nhân viên không đều, lịch theo dõi và cách áp dụng luật dừng.
+
+## 4. Bằng chứng
+
+- Commit `32e74fc`, [mã CP4](../../src/lab13_cp4.py) và [kế hoạch pilot](pilot_plan.yaml). Khi chạy `python lab13.py --cp4` trong `src/`, kết quả cho 859 yêu cầu hiệu dụng mỗi nhóm ở mức chênh 6 điểm và power 0,642 ở mức chênh 5 điểm.
+
+## 5. Công cụ AI đã dùng
+
+- Codex hỗ trợ đọc đề, đối chiếu hướng dẫn và chuẩn bị bản đề xuất ở phụ lục. Kết quả CP4 có thể tái lập từ mã nguồn. Phần xác nhận nhãn độc lập và cách tự kiểm tra do Hưng bổ sung.
+
+## 6. Tự đánh giá
+
+- Điểm cần tự rà là cách tính cỡ mẫu theo cụm và quy tắc phân biệt các loại lỗi. Chờ Hưng ghi phần tự đánh giá của mình.
+
+## Phụ lục — Phiếu nhãn đề xuất
 
 Bản đề xuất cho phần của Nguyễn Quốc Hưng, có Codex hỗ trợ đọc ca và đối chiếu hướng dẫn của giảng viên. Hưng tự kiểm tra và xác nhận trước khi dùng làm phiếu cá nhân. Người gắn nhãn còn lại chỉ mở phiếu này sau khi đã lưu đủ 20 nhãn của mình.
 

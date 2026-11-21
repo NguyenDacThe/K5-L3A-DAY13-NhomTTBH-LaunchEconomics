@@ -1,6 +1,6 @@
 # Bảng chi phí · Nhiệm vụ A và B
 
-Người 2 kiểm độc lập bằng Python trên hai CSV trong `src/`, theo công thức của lab. Nhiệm vụ A đã được đối chiếu với kết quả chạy `src/lab13.py` sau khi gộp CP1. Nhiệm vụ B dùng kết quả kiểm độc lập. Các chi phí làm tròn đến đồng, phần trăm tính từ số chưa làm tròn.
+Kết quả A/B được đối chiếu với `python lab13.py` chạy trên hai CSV trong `src/` sau khi gộp nhánh. Các chi phí làm tròn đến đồng, phần trăm tính từ số chưa làm tròn.
 
 ## A1 · Ba phép thử đáp án biết trước
 

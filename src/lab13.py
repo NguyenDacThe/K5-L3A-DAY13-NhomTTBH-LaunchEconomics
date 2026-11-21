@@ -7,7 +7,7 @@ Bản gốc chưa sửa nằm ở lab13_starter.py.
 import argparse
 import math
 
-from lab13_cp4 import doc_yeu_cau, in_ket_qua_cp4
+from lab13_cp4 import PHAM_VI_PILOT, doc_yeu_cau, in_ket_qua_cp4
 
 # Bảng giá GIẢ ĐỊNH của lab (không phải giá thật của nhà cung cấp nào)
 GIA_VAO = 26        # đồng cho 1.000 token đầu vào
@@ -82,6 +82,78 @@ def mo_hinh(runs, reqs, gia_vao=GIA_VAO, gia_ra=GIA_RA, gia_tool=GIA_TOOL, luong
     )
 
 
+def in_bang_do_nhay(runs, reqs, chi_phi_goc, pham_vi, ket_qua_pilot):
+    kich_ban = (
+        ('Giá token gấp đôi', dict(gia_vao=2 * GIA_VAO, gia_ra=2 * GIA_RA)),
+        ('Giá token giảm một nửa', dict(gia_vao=GIA_VAO / 2, gia_ra=GIA_RA / 2)),
+        ('Tỉ lệ xem lại gấp đôi', dict(he_so_xem_lai=2)),
+        ('Tỉ lệ xem lại giảm một nửa', dict(he_so_xem_lai=0.5)),
+        ('Số ca làm lại gấp đôi', dict(he_so_lam_lai=2)),
+        ('Số ca làm lại giảm một nửa', dict(he_so_lam_lai=0.5)),
+        ('Lương nhân viên tăng 25%', dict(luong_phut=1.25 * LUONG_PHUT)),
+        ('Tối đa 2 lần chạy', dict(max_lan_chay=2)),
+        ('Chỉ 1 lần chạy', dict(max_lan_chay=1)),
+    )
+    print('\nB1 · Kịch bản | chi phí mỗi việc thành công | thay đổi so với A2 [simulated]')
+    thay_doi = []
+    ket_qua_theo_gioi_han = {}
+    for ten, tham_so in kich_ban:
+        ket_qua = mo_hinh(runs, reqs, **tham_so)
+        cps = ket_qua['cps']
+        chenh = cps / chi_phi_goc - 1
+        thay_doi.append((ten, chenh))
+        if 'max_lan_chay' in tham_so:
+            ket_qua_theo_gioi_han[tham_so['max_lan_chay']] = ket_qua
+        print(f'{ten:28s} {cps:9,.0f} đ {chenh:+.1%}')
+
+    cps_cap = mo_hinh(runs, reqs, gia_vao=2 * GIA_VAO, gia_ra=2 * GIA_RA, he_so_xem_lai=2)['cps']
+    print(f'\nB2 · Gấp đôi giá token và tỉ lệ xem lại: {cps_cap:,.0f} đ ({cps_cap / chi_phi_goc - 1:+.1%}) [simulated]')
+    ba_yeu_to = sorted(thay_doi, key=lambda muc: muc[1], reverse=True)[:3]
+    print('Ba yếu tố làm chi phí tăng mạnh nhất:', ' · '.join(f'{ten} ({chenh:+.1%})' for ten, chenh in ba_yeu_to))
+
+    print('\nB3 · Giới hạn | trợ lý | không thành công | cả hệ thống | chi phí mỗi việc thành công [simulated]')
+    ket_qua_theo_gioi_han[3] = mo_hinh(runs, reqs, max_lan_chay=3)
+    chi_phi_he_thong = {}
+    for gioi_han, ket_qua in sorted(ket_qua_theo_gioi_han.items()):
+        ca_lam_tay = len(reqs) - ket_qua['thanh_cong']
+        tong_he_thong = ket_qua['tong'] + ca_lam_tay * BASELINE
+        chi_phi_he_thong[gioi_han] = tong_he_thong
+        print(f"{gioi_han} lượt | {ket_qua['tong']:,.0f} đ | {ca_lam_tay} | {tong_he_thong:,.0f} đ | {ket_qua['cps']:,.0f} đ")
+    re_nhat = min(chi_phi_he_thong, key=chi_phi_he_thong.get)
+    cps_thap_nhat = min(ket_qua_theo_gioi_han, key=lambda k: ket_qua_theo_gioi_han[k]['cps'])
+    print(f'Rẻ nhất cho cả hệ thống: {re_nhat} lượt. Chi phí mỗi việc thành công thấp nhất: {cps_thap_nhat} lượt.')
+
+    print('\nB4 · Xem lại 100% kết quả ok trong phạm vi pilot [simulated]')
+    co_ket_qua_ok = runs['request_id'].isin(pham_vi['request_id']) & runs['status'].eq('ok')
+    so_xem_lai = runs.loc[co_ket_qua_ok, 'request_id'].nunique()
+    so_lam_lai = pham_vi['ket_qua'].eq('lam_lai').sum()
+    ha_tang = ket_qua_pilot['token'] + ket_qua_pilot['tool']
+    thanh_cong = ket_qua_pilot['thanh_cong']
+    phut_lam_lai_tb = reqs.loc[reqs['ket_qua'].eq('lam_lai'), 'phut_lam_lai_simulated'].mean()
+    print(f'{so_xem_lai} yêu cầu xem lại, {so_lam_lai} ca làm lại, {thanh_cong} việc thành công')
+    for phut_lam_lai in (9, phut_lam_lai_tb):
+        chi_phi_lam_lai = so_lam_lai * phut_lam_lai * LUONG_PHUT
+        cps = (ha_tang + so_xem_lai * 5 * LUONG_PHUT + chi_phi_lam_lai) / thanh_cong
+        phut_hoa_von = (BASELINE * thanh_cong - ha_tang - chi_phi_lam_lai) / (so_xem_lai * LUONG_PHUT)
+        print(f'Làm lại {phut_lam_lai:.1f} phút/ca: {cps:,.0f} đ/việc ({cps / BASELINE:.2f}×), '
+              f'hòa vốn ở {phut_hoa_von:.1f} phút xem lại/lượt')
+
+
+def in_chi_so_cp5(reqs, pham_vi):
+    da_dong = reqs['dong_trong_24h'].eq(1)
+    mo_lai = reqs['mo_lai_trong_7_ngay'].eq(1)
+    da_xem_lai = reqs[reqs['duoc_xem_lai'].eq(1)]
+    bo_qua = da_xem_lai['quyet_dinh_xem_lai'].isin(['sua', 'bo'])
+    print('\nE1 · Chỉ số trong đợt chạy thử')
+    for ten, tu_so, mau_so in (
+        ('Đóng trong 24h, không mở lại trong 7 ngày', (da_dong & ~mo_lai).sum(), len(reqs)),
+        ('Sửa hoặc bỏ gợi ý', bo_qua.sum(), len(da_xem_lai)),
+        ('Mở lại trong 7 ngày', mo_lai.sum(), len(reqs)),
+        ('Làm lại trong phạm vi pilot', pham_vi['ket_qua'].eq('lam_lai').sum(), len(pham_vi)),
+    ):
+        print(f'{ten}: {tu_so}/{mau_so} ({tu_so / mau_so:.2%})')
+
+
 def main():
     parser = argparse.ArgumentParser(description='Lab 13 · Kinh tế và kế hoạch pilot')
     parser.add_argument('--cp4', action='store_true', help='Chỉ in cỡ mẫu và tỉ lệ mở lại của nhiệm vụ D')
@@ -125,7 +197,7 @@ def main():
         print(f"  Lần {lan}: {so_lieu['sum']}/{so_lieu['count']} ({so_lieu['sum'] / so_lieu['count']:.1%})")
 
     print('\nA4 · Chi phí cố định của phạm vi noi_dia + hang_nang')
-    pham_vi = reqs[reqs['loai'].isin(['noi_dia', 'hang_nang'])]
+    pham_vi = reqs[reqs['loai'].isin(PHAM_VI_PILOT)]
     ket_qua_pilot = mo_hinh(runs, pham_vi)
     # Khối lượng tháng là tổng yêu cầu toàn hệ thống, gồm cả các loại ngoài pilot.
     ti_le_thanh_cong_pilot = ket_qua_pilot['thanh_cong'] / len(reqs)
@@ -139,8 +211,10 @@ def main():
               f'{co_dinh_moi_viec:,.0f} đ cố định/việc | {cps_co_dinh:,.0f} đ/việc '
               f'({cps_co_dinh / BASELINE:.2f}×) [simulated]')
 
-    # TODO CP2 · Nhiệm vụ B: đổi từng yếu tố, ghi vào bảng độ nhạy.
+    in_bang_do_nhay(runs, reqs, ket_qua['cps'], pham_vi, ket_qua_pilot)
+    print()
     in_ket_qua_cp4(reqs.to_dict(orient='records'))
+    in_chi_so_cp5(reqs, pham_vi)
 
 
 if __name__ == '__main__':

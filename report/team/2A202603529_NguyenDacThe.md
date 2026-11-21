@@ -26,12 +26,14 @@
 - [Code tính cỡ mẫu CP4](../../src/lab13_cp4.py) in D1 và tỉ lệ mở lại **51/1.200 = 4,25%** toàn mẫu, **39/982 = 3,97%** trong phạm vi.
 - [Kế hoạch pilot](pilot_plan.yaml) có đối chứng đồng thời, cỡ mẫu, ngưỡng dừng và rollback. Ngày và ngưỡng trong file là đề xuất để nhóm duyệt.
 
-Sau bàn giao, thêm `from lab13_cp4 import in_ket_qua_cp4` và gọi `in_ket_qua_cp4(reqs)` tại `TODO CP4` trong `src/lab13.py`. Chạy toàn bộ lệnh của nhóm từ `src/` rồi đối chiếu kết quả A/B và D1 với hai báo cáo.
+Sau khi gộp nhánh, `python lab13.py` đã in A, B và D1 từ cùng bộ dữ liệu. Lệnh `python lab13.py --cp4` kiểm tra riêng cỡ mẫu và tỉ lệ mở lại.
 
 ## 5. Công cụ AI đã dùng
 
-Dùng ChatGPT (Codex) hỗ trợ đọc đề, viết mã tính CP4, tính lại A/B bằng Python trên dữ liệu gốc và soạn bản nháp các báo cáo. Các phép tính tiêu biểu được ghi ngay trong bảng chi phí để có thể kiểm tra lại. Phần đối chiếu với code nhóm và tự xác nhận của thành viên sẽ được bổ sung sau bàn giao.
+Dùng ChatGPT (Codex) hỗ trợ đọc đề, viết mã tính CP4, tính lại A/B bằng Python trên dữ liệu gốc và soạn bản nháp các báo cáo. Các phép tính tiêu biểu được ghi trong bảng chi phí. Codex đã chạy và đối chiếu A/B và D1 trên bản code đã gộp. Thành viên cần tự xác nhận kết quả trước khi nộp.
 
 ## 6. Tự đánh giá
 
-Nội dung để tự rà trước khi nộp gồm phép tính chi phí, cách giải cỡ mẫu theo cụm và ảnh hưởng của MDE lên khả năng phát hiện mức chênh 5 điểm. Bản nháp này chưa ghi kết quả tự đánh giá của thành viên.
+Điểm làm tốt của tôi là trình bày phép tính và nguồn số liệu để nhóm có thể kiểm lại bảng A/B từ hai CSV. Kết quả B3 cho thấy giới hạn 1 lượt có chi phí thấp nhất trên mỗi việc trợ lý làm xong, còn giới hạn 2 lượt rẻ nhất cho cả hệ thống khi tính cả phần nhân viên làm thay (simulated). Đây là hai thước đo tôi cần phân biệt khi giải thích đề xuất với hội đồng.
+
+Điểm tôi cần cải thiện là trình bày rõ hơn ảnh hưởng của việc chia nhóm theo nhân viên. Cỡ mẫu hiệu dụng có thể giảm khi lượng yêu cầu giữa các nhân viên chênh lệch, và thiết kế để phát hiện mức chênh 6 điểm phần trăm có power khoảng 0,64 nếu tác động thật là 5 điểm. Khi pilot có dữ liệu, tôi sẽ đối chiếu lại cỡ mẫu theo từng nhân viên và dùng phút xem lại, làm lại đo thực tế để kiểm tra ngưỡng chi phí.

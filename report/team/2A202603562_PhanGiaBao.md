@@ -20,7 +20,7 @@
 - Gắn nhãn đủ 20 ca, không trao đổi với người gắn nhãn 2, trước khi so nhãn. Theo nhãn của tôi: Do người dùng 4 ca (1, 6, 9, 14), Hệ thống 4 ca (2, 7, 15, 20), Ngữ cảnh 3 ca (10, 16, 18), Giới hạn hệ thống 4 ca (4, 11, 13, 19), Ngầm 5 ca (3, 5, 8, 12, 17).
 - Bảng khắc phục 5 ca: ca 9 (Do người dùng), 7 (Hệ thống), 18 (Ngữ cảnh), 4 (Giới hạn hệ thống), 17 (Ngầm). Mỗi dòng có event, ngưỡng, tần suất và một vai trò phụ trách. Ví dụ ca 7: đối soát mỗi giờ tin nhắn "đã hoàn" không có `refund_ledger_write` ok cùng `trace_id`, ngưỡng 0 ca, Kỹ sư trưởng agent phụ trách.
 - Ba chỉ số trong đợt chạy thử: chỉ số chính **82,83%** (994/1.200), tỉ lệ bỏ qua gợi ý **27,12%** (48/177), tỉ lệ mở lại 7 ngày **4,25%** (51/1.200; 3,97% trong phạm vi `noi_dia` + `hang_nang`).
-- Danh sách **10 event** có `trace_id`; cả năm chỉ số trong `chi_so.md` đều tính được từ danh sách này.
+- Bản nháp gồm **10 dòng event** có `trace_id`. Bản gộp tách riêng event đóng và mở lại, rồi bổ sung event thông báo và kết quả hoàn tiền. Danh sách hiện có **13 event**.
 - Ba dòng rủi ro kinh tế: làm lại gấp đôi lên **6.787 đ** (+51,8%); xem lại 100% lên **11.743 đ = 0,98×** hoặc **12.415 đ = 1,03×** nếu làm lại 15,3 phút; khối lượng giảm một nửa làm chi phí cố định thành **2.370 đ/việc** (tất cả simulated).
 
 ## 4. Bằng chứng

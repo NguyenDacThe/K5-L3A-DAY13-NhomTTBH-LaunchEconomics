@@ -51,7 +51,7 @@ pilot:
       Mục tiêu 5.980 yêu cầu mỗi nhóm tương ứng 299 mỗi nhân viên khi cân bằng. Với số yêu cầu theo nhân viên khác nhau, tính n hiệu dụng mỗi nhóm bằng N² / (N + ICC × tổng m_i × (m_i − 1)), với N là tổng số yêu cầu, m_i là số của từng nhân viên và ICC là 0,02.
       Đủ mẫu khi cả hai nhóm có 20 nhân viên và n hiệu dụng ít nhất 859 mỗi nhóm. Giữ phân tích theo nhóm được phân ngẫu nhiên và tính khoảng tin cậy 95% cho mức chênh tỉ lệ có điều chỉnh cụm theo nhân viên.
       Tử số chính là số yêu cầu đóng trong 24 giờ và không mở lại trong 7 ngày sau đóng. Mẫu số là toàn bộ yêu cầu đủ điều kiện trong cửa sổ phân tích. Đợi hết thời gian theo dõi trước khi khóa mẫu.
-      Chỉ đề xuất mở rộng nếu cận dưới khoảng tin cậy 95% của tác động lớn hơn 0, đủ mẫu, chi phí đạt ngưỡng và không có vi phạm an toàn hoặc sử dụng chưa xử lý. Báo mức chênh quan sát cùng khoảng tin cậy để nhóm thấy kết quả so với mục tiêu thiết kế 6 điểm phần trăm.
+      Chỉ đề xuất mở rộng nếu mức chênh quan sát đạt ít nhất +5 điểm phần trăm, cận dưới khoảng tin cậy 95% lớn hơn 0, đủ mẫu, chi phí đạt ngưỡng và không có vi phạm an toàn hoặc sử dụng chưa xử lý. Báo mức chênh và khoảng tin cậy, với 6 điểm phần trăm là mức dùng để tính cỡ mẫu.
       Trước mỗi lần tăng rollout, cần ít nhất ba lần rà an toàn liên tiếp đủ dữ liệu, không vi phạm luật dừng. Nếu chưa đủ, Giám đốc vận hành giữ bước hiện tại và dời các mốc tiếp theo.
   stop_rules:
     - >-
