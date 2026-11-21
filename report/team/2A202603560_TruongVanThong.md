@@ -27,6 +27,8 @@ CP1, nhiệm vụ A. Kiểm tra công thức chạy lại, tính chi phí từ t
 
 Codex hỗ trợ đọc yêu cầu, triển khai code Python và soạn bảng từ kết quả chạy trên hai file CSV của lab. Codex đã chạy `python lab13.py` trong thư mục `src/`.
 
+Tôi đã chạy lại `python lab13.py` trong thư mục `src/`. Chương trình báo cả ba phép thử A1 đều đạt (**1,20 · 1,25 · 1,25**). Kết quả chạy khớp với bảng chi phí A1–A4, gồm **978** việc thành công và **4.472 đ/việc thành công** (`simulated`) ở A2.
+
 ## 6. Tự đánh giá
 
 Cần tự giải thích được vì sao chi phí tính cả lượt thất bại, còn số việc ở mẫu số chỉ đếm yêu cầu thành công. Có thể kiểm tra tay phép thử A1 với `p = 0,8` và tối đa hai lượt: lượt đầu luôn diễn ra, lượt thứ hai xảy ra với xác suất `0,2`, nên kỳ vọng là `1 + 0,2 = 1,20` lượt.
