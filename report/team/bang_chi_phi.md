@@ -1,14 +1,14 @@
 # Bảng chi phí · Nhiệm vụ A và B
 
-Người 2 kiểm độc lập bằng Python trên hai CSV trong `src/`, theo công thức của lab. Bảng chờ đối chiếu với `src/lab13.py` sau bàn giao CP1–CP2. Các chi phí làm tròn đến đồng, phần trăm tính từ số chưa làm tròn.
+Người 2 kiểm độc lập bằng Python trên hai CSV trong `src/`, theo công thức của lab. Nhiệm vụ A đã được đối chiếu với kết quả chạy `src/lab13.py` sau khi gộp CP1. Nhiệm vụ B dùng kết quả kiểm độc lập. Các chi phí làm tròn đến đồng, phần trăm tính từ số chưa làm tròn.
 
 ## A1 · Ba phép thử đáp án biết trước
 
 | Phép thử (p = 0,8) | Kết quả của nhóm |
 | --- | --- |
-| Số lần chạy trung bình, tối đa 2 lần | 1 + 0,2 = **1,20** |
-| Số lần chạy trung bình, chạy đến khi đúng | 1 / 0,8 = **1,25** |
-| Hệ số chi phí mỗi việc thành công, tối đa 3 lần | (1 + 0,2 + 0,04) / (1 − 0,2³) = **1,25** |
+| Số lần chạy trung bình, tối đa 2 lần | 1 + 0,2 = **1,20** · ĐẠT |
+| Số lần chạy trung bình, chạy đến khi đúng | 1 / 0,8 = **1,25** · ĐẠT |
+| Hệ số chi phí mỗi việc thành công, tối đa 3 lần | (1 + 0,2 + 0,04) / (1 − 0,2³) = **1,25** · ĐẠT |
 
 ## A2 · Mô hình chi phí từ trace
 
@@ -37,7 +37,7 @@ Người 2 kiểm độc lập bằng Python trên hai CSV trong `src/`, theo c�
 | quoc_te | 150 | 27,3% (41/150) | 2,32 (348/150) | 22.515 đ | 1,88× |
 | doi_tac | 68 | 54,4% (37/68) | 1,88 (128/68) | 10.215 đ | 0,85× |
 
-- `quoc_te` có chi phí **1,88×** (simulated). Tỉ lệ `ok` lần 1–3 giảm từ **30,0%** còn **11,4%** và **2,2%**. Lần 3 chỉ thêm 2 lượt `ok` trên 93 lần chạy, nên lợi ích biên thấp.
+- Nên loại `quoc_te` khỏi pilot vì chi phí **1,88×** (simulated) và chỉ **27,3%** yêu cầu thành công. Tỉ lệ lượt chạy có trạng thái `ok` lần 1–3 là **30,0%**, **11,4%** và **2,2%**. Lần 3 chỉ thêm 2 lượt `ok` trên 93 lần chạy.
 
 ## A4 · Chi phí cố định (phạm vi noi_dia + hang_nang)
 
