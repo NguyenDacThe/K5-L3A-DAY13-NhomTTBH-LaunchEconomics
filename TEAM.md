@@ -2,10 +2,10 @@
 
 ## Thông tin nhóm
 
-- Tên nhóm:
+- Tên nhóm: NhomTTBH
 - Lớp: L3A
-- Repo nhóm: `K5-L3A-DAY13-NhomTTBH-LaunchEconomics` (xem [SUBMISSION.md](SUBMISSION.md))
-- URL repo, nhánh nộp, commit chốt:
+- Repo nhóm: `K5-L3A-DAY13-NhomTTBH-LaunchEconomics`
+- URL repo, nhánh nộp, commit chốt: https://github.com/NguyenDacThe/K5-L3A-DAY13-NhomTTBH-LaunchEconomics.git
 
 ## Thành viên
 
