@@ -2,8 +2,8 @@
 
 Nhóm số n chấm nhóm số n + 1; nhóm cuối chấm nhóm 1. Chấm theo bằng chứng trong hồ sơ, không theo cách trình bày: một đề xuất No-go có lý do bằng số được điểm cao hơn một đề xuất Go bỏ qua con số bất lợi.
 
-- Nhóm chấm (hội đồng): NhomTTBH, lớp L3A.
-- Nhóm được chấm: NhomCDEF, lớp L3A.
+- Nhóm chấm (hội đồng): NhomCDEF, lớp L3A.
+- Nhóm được chấm: NhomTTBH, lớp L3A.
 
 | Tiêu chí | 0 điểm | 5 điểm | 10 điểm | Điểm | Lý do (có số) |
 | --- | --- | --- | --- | ---: | --- |
